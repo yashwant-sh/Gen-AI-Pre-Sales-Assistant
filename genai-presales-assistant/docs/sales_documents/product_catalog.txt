@@ -1,0 +1,380 @@
+PRODUCT CATALOG - COMPLETE PORTFOLIO
+=====================================
+
+Last Updated: Q1 2026
+
+Our product portfolio spans six categories: Software Licenses, Cloud Services, Hardware, Consulting, Training, and Support & Maintenance. Below is a detailed breakdown of each offering.
+
+
+SOFTWARE LICENSES
+=================
+
+Enterprise Suite
+----------------
+Our flagship software platform designed for large-scale organizations. Enterprise Suite provides a unified workspace for project management, resource planning, document collaboration, and business intelligence dashboards.
+
+Key Features:
+- Centralized project and portfolio management with Gantt charts and Kanban boards
+- Real-time collaboration with version control and audit trails
+- Built-in BI dashboards with drag-and-drop report builder
+- Role-based access control with SSO/SAML integration
+- API gateway for third-party integrations (Salesforce, SAP, Oracle)
+- Automated workflow engine with 200+ pre-built templates
+
+Pricing: Tiered based on seat count. Typical enterprise deployment ranges from $10,000 to $36,000 annually depending on modules selected and user count. Volume discounts available for 500+ seats.
+
+Ideal For: Large enterprises and government agencies needing a single platform to replace fragmented point solutions. Particularly strong in Technology, Finance, and Government sectors.
+
+Competitive Edge: Unlike Atlassian or Monday.com, Enterprise Suite includes native BI and resource planning without add-ons, reducing total cost of ownership by an estimated 25-35%.
+
+
+Professional Edition
+--------------------
+A mid-market version of our software platform tailored for growing organizations that need enterprise-grade features without enterprise complexity.
+
+Key Features:
+- Streamlined project management with team workspaces
+- Integrated time tracking and resource allocation
+- Pre-built integrations with popular tools (Slack, Teams, Jira, GitHub)
+- Customizable reporting with scheduled email delivery
+- Multi-tenant architecture for managed service providers
+
+Pricing: Ranges from $10,000 to $37,000 annually based on features and seat count. Starter, Growth, and Scale tiers available.
+
+Ideal For: Mid-market companies in Technology, Education, and Consulting sectors. Also popular with Retail chains managing multiple locations.
+
+
+Cloud Platform
+--------------
+A comprehensive cloud application development and hosting platform. Cloud Platform provides container orchestration, serverless compute, managed databases, and CI/CD pipelines in a single offering.
+
+Key Features:
+- Kubernetes-based container orchestration with auto-scaling
+- Serverless function hosting with event-driven triggers
+- Managed PostgreSQL, Redis, and MongoDB databases
+- Built-in CI/CD with GitHub and GitLab integration
+- Infrastructure-as-Code templates for repeatable deployments
+- SOC 2 Type II and ISO 27001 certified
+
+Pricing: Starting at approximately $12,000 annually for base platform. Usage-based pricing for compute and storage resources.
+
+Ideal For: Technology companies and Digital Innovations teams building cloud-native applications. Strong adoption in Healthcare for HIPAA-compliant deployments and in Finance for low-latency trading platforms.
+
+
+CLOUD SERVICES
+==============
+
+Compute Instance
+----------------
+On-demand and reserved virtual machines optimized for various workloads including general computing, memory-intensive analytics, and GPU-accelerated machine learning.
+
+Key Features:
+- Instance families: General Purpose, Compute Optimized, Memory Optimized, GPU Accelerated
+- Auto-scaling groups with predictive scaling
+- Spot instance pricing for batch workloads (up to 70% discount)
+- Bare-metal options for performance-sensitive applications
+- Cross-region deployment with automated failover
+
+Pricing: Ranges from $2,000 to $48,000 annually depending on instance type, commitment level, and usage patterns. Reserved instances offer 30-40% savings over on-demand.
+
+Ideal For: Any organization running workloads in the cloud. Particularly popular with Technology companies for development environments, Healthcare for analytics pipelines, and Finance for risk modeling.
+
+
+Cloud Storage
+-------------
+Scalable object and block storage with built-in redundancy, lifecycle management, and cross-region replication.
+
+Key Features:
+- Object storage with 99.999999999% durability (11 nines)
+- Block storage with SSD and HDD tiers
+- Automated tiering between hot, warm, and cold storage
+- Cross-region replication for disaster recovery
+- Native encryption at rest and in transit (AES-256)
+- S3-compatible API for easy migration
+
+Pricing: From $16,000 to $40,000 annually based on capacity, access patterns, and redundancy level. Pay-as-you-grow model available.
+
+Ideal For: Organizations with large data volumes. Energy companies use it for sensor data lakes, Media companies for content libraries, and Healthcare for medical imaging archives.
+
+
+CDN Service
+-----------
+Global content delivery network with edge computing capabilities, DDoS protection, and real-time analytics.
+
+Key Features:
+- 200+ edge locations across 6 continents
+- Edge compute for serverless logic at the CDN layer
+- Built-in WAF and DDoS mitigation (Layer 3/4/7)
+- Real-time traffic analytics and anomaly detection
+- HTTP/3 and QUIC protocol support
+- Video streaming optimization with adaptive bitrate
+
+Pricing: From $4,000 to $47,000 annually depending on bandwidth, edge compute usage, and security tier.
+
+Ideal For: Media companies delivering video content, Retail companies with global e-commerce sites, and Technology companies distributing software updates. Also critical for Government portals with high availability requirements.
+
+
+HARDWARE
+========
+
+Network Switch
+--------------
+Enterprise-grade managed switches for data center and campus networking, supporting 10G/25G/100G Ethernet with advanced routing and security features.
+
+Key Features:
+- Layer 2/3 switching with BGP, OSPF, and VXLAN support
+- 10G/25G/100G port configurations
+- Zero-touch provisioning with centralized management
+- MACsec encryption for in-flight data protection
+- Energy-efficient design with smart power management
+- Stacking support for up to 8 units
+
+Pricing: From $4,500 to $43,000 per unit depending on port count and speed configuration.
+
+Ideal For: Organizations building or upgrading data center and campus networks. Popular in Technology, Finance (trading floor networks), and Education (campus-wide deployments).
+
+
+Storage Array
+-------------
+High-performance unified storage arrays supporting block, file, and object protocols with inline deduplication and compression.
+
+Key Features:
+- All-flash and hybrid configurations
+- Inline deduplication and compression (typical 4:1 data reduction)
+- Synchronous and asynchronous replication
+- NVMe-oF support for sub-100 microsecond latency
+- Non-disruptive upgrades and expansion
+- Integration with VMware, Hyper-V, and container platforms
+
+Pricing: From $29,000 to $47,000 depending on capacity, performance tier, and data services.
+
+Ideal For: Organizations requiring high-performance shared storage. Healthcare (PACS imaging), Manufacturing (CAD/CAM), and Finance (transaction databases) are primary verticals.
+
+
+Server Rack
+-----------
+Pre-configured and custom rack solutions including compute nodes, power distribution, cooling, and cable management for data center deployments.
+
+Key Features:
+- 42U standard and 48U high-density configurations
+- Integrated power distribution with dual-feed redundancy
+- Hot/cold aisle containment compatible
+- Cable management with color-coded patching
+- Remote monitoring with environmental sensors (temperature, humidity, power)
+- Tool-less rail kits for rapid deployment
+
+Pricing: Starting at approximately $22,600 per rack depending on configuration and compute density.
+
+Ideal For: Organizations building or expanding data center capacity. Particularly popular with Technology companies, Government agencies, and large Enterprise customers across all industries.
+
+
+Workstation
+-----------
+High-performance desktop and mobile workstations for engineering, design, data science, and content creation professionals.
+
+Key Features:
+- Intel Xeon and AMD Threadripper processor options
+- NVIDIA RTX professional GPU configurations
+- ECC memory support up to 512GB
+- ISV certifications (AutoCAD, SolidWorks, Adobe Creative Suite, MATLAB)
+- Remote management with vPro/DASH
+- 3-year on-site warranty included
+
+Pricing: From $16,800 to $22,800 depending on configuration.
+
+Ideal For: Engineering and design teams in Manufacturing, Architecture firms in Real Estate, Data Science teams in Technology and Finance, and content creators in Media.
+
+
+CONSULTING
+==========
+
+Strategy Consulting
+-------------------
+Engagement-based advisory services helping organizations define technology strategy, plan digital transformation, and optimize IT spending.
+
+Typical Engagements:
+- Digital Transformation Roadmapping (6-8 weeks): Assess current state, define target architecture, create phased migration plan
+- IT Cost Optimization (4-6 weeks): Analyze spend, identify consolidation opportunities, build business case
+- Cloud Strategy (4-8 weeks): Evaluate workloads for cloud migration, select providers, define governance model
+- Data Strategy (6-10 weeks): Assess data maturity, design data platform architecture, define governance
+
+Pricing: Ranges from $26,000 to $33,000 per engagement depending on scope and duration.
+
+Ideal For: Enterprises undergoing digital transformation. Government agencies modernizing legacy systems. Finance companies evaluating cloud migration. Energy companies building data analytics capabilities.
+
+Track Record: Strategy Consulting engagements have a 92% client satisfaction score. Notable wins include Future Systems (Consulting sector, $157K engagement) and Smart Technologies (Consulting sector).
+
+
+Migration Service
+-----------------
+End-to-end migration services for moving workloads between on-premises, cloud, and hybrid environments with minimal downtime.
+
+Key Features:
+- Pre-migration assessment and dependency mapping
+- Automated migration tooling with rollback capability
+- Database migration with schema conversion and validation
+- Application refactoring guidance for cloud-native optimization
+- Cutover planning with sub-hour RTO targets
+- Post-migration performance validation and tuning
+
+Pricing: From $10,700 to $21,500 per engagement depending on workload count and complexity.
+
+Ideal For: Organizations moving from legacy on-premises infrastructure to cloud. Particularly relevant for Government agencies with mainframe modernization needs and Healthcare organizations migrating to HIPAA-compliant cloud environments.
+
+
+Optimization Package
+--------------------
+Performance and cost optimization services for organizations already running cloud or hybrid environments.
+
+Key Features:
+- Cloud cost analysis and right-sizing recommendations
+- Application performance profiling and bottleneck identification
+- Database query optimization and indexing strategy
+- Infrastructure automation and IaC implementation
+- Security posture assessment and remediation
+- Ongoing optimization playbook and runbooks
+
+Pricing: From $11,600 to $13,900 per engagement.
+
+Ideal For: Organizations with cloud spend exceeding $100K/year seeking to reduce waste. Technology companies optimizing SaaS platforms, Retail companies reducing e-commerce infrastructure costs.
+
+
+TRAINING
+========
+
+Technical Training
+------------------
+Instructor-led training courses covering our product portfolio, cloud technologies, DevOps practices, and security fundamentals.
+
+Available Courses:
+- Enterprise Suite Administration (3 days)
+- Cloud Platform Developer Bootcamp (5 days)
+- Storage Array Management and Troubleshooting (2 days)
+- Network Switch Configuration and Security (2 days)
+- DevOps Pipeline Implementation (3 days)
+- Cloud Security Fundamentals (2 days)
+
+Pricing: From $8,700 to $46,500 per course depending on duration, class size, and customization level.
+
+Delivery: On-site at customer location or virtual instructor-led. Maximum 20 participants per session.
+
+Ideal For: IT teams deploying our products. Popular with Government agencies (compliance training mandates), Healthcare (security-focused courses), and Education institutions (faculty upskilling).
+
+
+Online Course
+-------------
+Self-paced e-learning modules with hands-on labs, quizzes, and completion certificates for our entire product portfolio.
+
+Key Features:
+- 150+ hours of video content across all product lines
+- Hands-on virtual labs with pre-configured environments
+- Progress tracking and manager dashboards
+- Mobile-friendly with offline download capability
+- Monthly content updates aligned with product releases
+- Learning paths by role (Admin, Developer, Architect, End User)
+
+Pricing: From $22,600 to $39,400 annually for organizational subscriptions based on seat count.
+
+Ideal For: Distributed teams needing flexible training schedules. Technology and Education sectors are the highest adopters. Also popular for onboarding new hires across all industries.
+
+
+Certification Program
+---------------------
+Industry-recognized certification exams validating proficiency in our products and associated technologies.
+
+Available Certifications:
+- Certified Enterprise Suite Administrator (CESA)
+- Certified Cloud Platform Architect (CCPA)
+- Certified Network Infrastructure Specialist (CNIS)
+- Certified Storage Solutions Engineer (CSSE)
+- Certified Cloud Security Professional (CCSP)
+
+Pricing: From $7,900 to $28,500 for certification programs including prep materials, practice exams, and exam vouchers. Bulk pricing available for organizations certifying 10+ professionals.
+
+Ideal For: IT professionals seeking career advancement. Organizations in Government and Finance sectors where certified staff are often contractually required.
+
+
+On-site Workshop
+----------------
+Customized hands-on workshops conducted at the customer's facility, tailored to their specific environment and use cases.
+
+Key Features:
+- Pre-workshop assessment of customer environment
+- Customized lab exercises using customer's actual infrastructure
+- Best practices review and architecture recommendations
+- Hands-on troubleshooting scenarios
+- Post-workshop action plan and reference materials
+
+Pricing: From $1,800 to $17,300 per workshop depending on duration (1-5 days) and customization level.
+
+Ideal For: Teams deploying new products who need hands-on experience in their own environment. Manufacturing companies (ERP integration workshops), Retail chains (POS system training).
+
+
+SUPPORT & MAINTENANCE
+=====================
+
+Maintenance Contract
+--------------------
+Annual maintenance agreements covering software updates, security patches, and access to our technical support team.
+
+Key Features:
+- All software updates and security patches included
+- Access to support portal with knowledge base
+- Bug fix prioritization based on severity level
+- License compliance management
+- End-of-life notifications and migration assistance
+
+Pricing: Approximately $42,800 annually. Typically 18-22% of original software license cost.
+
+Ideal For: All software license customers. Required for organizations in regulated industries (Finance, Healthcare, Government) to maintain compliance.
+
+
+Premium Support
+---------------
+Enhanced support with faster response times, dedicated account team, and proactive health checks.
+
+Key Features:
+- 15-minute response time for Severity 1 issues (vs. 4 hours on standard)
+- Dedicated Technical Account Manager (TAM)
+- Quarterly business reviews and roadmap previews
+- Proactive health monitoring and alerting
+- Priority access to beta programs
+- On-site support for critical incidents
+
+Pricing: Approximately $40,000 annually.
+
+Ideal For: Organizations running mission-critical workloads. Finance (trading platforms), Healthcare (patient systems), and Government (citizen-facing services) are primary adopters.
+
+
+24/7 Monitoring
+---------------
+Round-the-clock infrastructure monitoring and incident management service with automated alerting and response.
+
+Key Features:
+- 24/7 Network Operations Center (NOC) coverage
+- 500+ pre-built monitoring templates for our product portfolio
+- Automated incident detection, classification, and escalation
+- Monthly uptime reports and trend analysis
+- Integration with customer ticketing systems (ServiceNow, Jira Service Management)
+- Customizable alerting thresholds and notification channels
+
+Pricing: From $39,200 to $49,300 annually depending on infrastructure scope and SLA tier.
+
+Ideal For: Organizations without 24/7 IT staff. Energy companies monitoring SCADA systems, Healthcare organizations with patient-critical systems, Retail companies with always-on e-commerce platforms.
+
+
+SLA Guarantee
+-------------
+Contractual service level agreements with financial penalties for non-compliance, providing customers guaranteed uptime and performance.
+
+Key Features:
+- 99.95% to 99.999% uptime guarantees depending on tier
+- Service credits for SLA breaches (10-30% of monthly fee)
+- Guaranteed response and resolution times by severity
+- Monthly SLA compliance reporting
+- Annual SLA review and adjustment
+- Covers all cloud services and managed infrastructure
+
+Pricing: Approximately $43,700 annually for the comprehensive guarantee package.
+
+Ideal For: Enterprises with strict regulatory or contractual uptime requirements. Government agencies (FedRAMP), Finance companies (SOX compliance), Healthcare (HIPAA uptime requirements).

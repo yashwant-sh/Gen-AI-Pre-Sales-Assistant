@@ -1,0 +1,3 @@
+# Minimal deps for Streamlit UI only (see Dockerfile.frontend)
+streamlit>=1.28.0
+requests>=2.31.0

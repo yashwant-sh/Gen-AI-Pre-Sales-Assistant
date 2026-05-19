@@ -1,0 +1,695 @@
+================================================================================
+  GenAI Presales Assistant — Interview Questions & Answers (36 Q&A)
+================================================================================
+
+
+════════════════════════════════════════════════════════════════════════════════
+  SECTION 1: PRODUCT & BUSINESS QUESTIONS
+════════════════════════════════════════════════════════════════════════════════
+
+Q1. What business problem does your presales assistant solve?
+
+In B2B software companies, presales teams spend a huge amount of time on
+repetitive work — pulling deal data from CRMs, drafting proposals, writing
+follow-up emails, and analyzing pipeline performance. My assistant automates
+all of this. A presales rep can just ask in natural language, "Show me top 5
+deals by value" or "Draft a proposal for a software implementation project,"
+and the system handles everything — querying the database, retrieving relevant
+templates, and generating a polished response using an LLM. It reduces the
+turnaround time from hours to seconds.
+
+--------------------------------------------------------------------------------
+
+Q2. Who are the end users?
+
+Primarily presales consultants, sales reps, and account managers. Basically
+anyone in the sales org who needs quick access to CRM data, wants to generate
+proposals or emails without starting from scratch, or needs pipeline analytics
+on the fly. It could also be used by sales leaders who want quick performance
+summaries without digging through dashboards.
+
+--------------------------------------------------------------------------------
+
+Q3. What kind of queries does it handle?
+
+Four categories:
+- Data queries — "How many customers are in the technology industry?", "What's
+  the total value of closed won deals?" — these get converted to SQL and run
+  against our CRM database.
+- Time analytics — "Compare quarterly revenue growth across industries" — these
+  generate time-grouped SQL with period comparisons.
+- Document queries — "Draft a follow-up email for a deal in negotiation stage",
+  "Write a proposal for a software implementation" — these use RAG to pull
+  relevant templates and the LLM generates polished content.
+- General queries — anything conversational goes directly to the LLM.
+
+--------------------------------------------------------------------------------
+
+Q4. How does it improve efficiency vs manual process?
+
+Three main ways: First, speed — a data question that takes 10-15 minutes of SQL
+writing and dashboard navigation is answered in under 5 seconds. Second,
+consistency — proposals and emails are generated using proven templates from the
+knowledge base, so quality is standardized. Third, context retention — the
+system maintains conversation memory, so a rep can ask "Show me top 5 deals"
+then follow up with "What's the total value of those?" without repeating
+context. In a manual process, every query is a fresh start.
+
+
+════════════════════════════════════════════════════════════════════════════════
+  SECTION 2: ARCHITECTURE QUESTIONS
+════════════════════════════════════════════════════════════════════════════════
+
+Q5. Can you explain your end-to-end architecture?
+
+It's a three-tier architecture:
+
+- Frontend: Streamlit web app — a chat-style interface where users type
+  queries. It maintains a session ID and sends it with every request.
+- Backend: FastAPI server with four main components:
+  1. Intent Classifier — hybrid rule-based + keyword scoring that classifies
+     the query into time_analytics, data_query, document_query, or general.
+  2. SQL Agent — converts natural language to SQL using rule-based patterns
+     with confidence scoring, with LLM fallback for complex queries.
+  3. RAG Pipeline — retrieves relevant documents from a FAISS vector store
+     and generates answers using the LLM.
+  4. Orchestrator — the central router that takes the classified intent and
+     dispatches to the right handler.
+- Data layer: SQLite database for CRM data (customers, deals, activities,
+  products), FAISS for the vector store, and an in-memory session manager
+  for conversation memory and query caching.
+
+The LLM (Llama 3.1 8B via Groq API) is used across all components — SQL
+generation fallback, RAG answer generation, and general responses.
+
+--------------------------------------------------------------------------------
+
+Q6. How does your RAG pipeline work?
+
+It follows the standard Retrieve-then-Generate pattern:
+
+1. Indexing phase: Sales documents (proposal templates, email templates,
+   negotiation strategies, sales playbooks) are chunked into 500-character
+   segments with 50-character overlap. Each chunk is embedded using
+   all-MiniLM-L6-v2 from sentence-transformers, and the embeddings are stored
+   in a FAISS index.
+2. Retrieval phase: When a document query comes in, the user's query is
+   embedded using the same model, and we do a cosine similarity search against
+   the FAISS index to retrieve the top-5 most relevant chunks.
+3. Generation phase: The retrieved chunks are concatenated into a context
+   block, and a task-specific system prompt (email, proposal, or general) is
+   sent along with the context and user query to the LLM. The LLM generates
+   a response grounded in the retrieved documents.
+
+If the LLM fails for any reason, there's a static template fallback so the
+user still gets a response.
+
+--------------------------------------------------------------------------------
+
+Q7. How do you ingest and index documents?
+
+The pipeline supports PDFs (via PyPDF2), Word docs (via python-docx), and plain
+text files. When the server starts, it scans the docs/sales_documents directory.
+Each file is read, cleaned, and split into chunks using a character-based
+splitter with configurable chunk_size=500 and chunk_overlap=50. Each chunk is
+embedded using the sentence-transformers model, then added to the FAISS index.
+The index and chunk metadata are persisted to disk as a .bin file and a pickle
+file, so they don't need to be rebuilt on every restart.
+
+--------------------------------------------------------------------------------
+
+Q8. How do you retrieve relevant information?
+
+I use FAISS (Facebook AI Similarity Search) with L2 distance on normalized
+embeddings, which effectively gives cosine similarity. At query time, the user
+query is embedded into the same 384-dimensional space, and FAISS returns the
+top-K nearest chunks. I use K=5 by default. Each retrieved chunk carries its
+source metadata (file name, chunk ID), so we can trace which document
+contributed to the answer.
+
+
+════════════════════════════════════════════════════════════════════════════════
+  SECTION 3: DATA QUESTIONS
+════════════════════════════════════════════════════════════════════════════════
+
+Q9. What type of data did you use? (proposals, PDFs, docs, CRM)
+
+Two types:
+- Structured data: Synthetic CRM data in SQLite — 4 tables: customers (100
+  records with industry, size, revenue), deals (200 records with value, stage,
+  probability, owner), activities (500 records), and products (50 records).
+  This is generated programmatically with realistic business logic using a
+  custom CRMDataGenerator.
+- Unstructured data: 4 sales documents — proposal_template.txt,
+  email_templates.txt, negotiation_strategies.txt, and sales_playbook.txt.
+  These serve as the knowledge base for the RAG pipeline.
+
+--------------------------------------------------------------------------------
+
+Q10. How did you clean and preprocess the data?
+
+For structured data, the CRM generator itself enforces constraints — valid
+stages, realistic deal values, probability distributions, proper date ranges,
+and foreign key relationships between tables. For unstructured documents,
+preprocessing happens during chunking — text is extracted from PDFs/DOCX,
+whitespace is normalized, and the content is split into overlapping chunks to
+preserve context at boundaries. No heavy NLP preprocessing was needed since
+we're using embedding-based retrieval, not keyword-based.
+
+--------------------------------------------------------------------------------
+
+Q11. How do you update the knowledge base?
+
+There's a /rag/add-documents API endpoint. You can POST new document paths,
+and the pipeline will read, chunk, embed, and add them to the existing FAISS
+index without rebuilding from scratch. On server restart, the pipeline first
+checks for a persisted index on disk — if it exists, it loads it; if not, it
+rebuilds from the documents directory. So you can also just drop new files into
+the docs/sales_documents folder and restart.
+
+
+════════════════════════════════════════════════════════════════════════════════
+  SECTION 4: LLM & MODEL SELECTION
+════════════════════════════════════════════════════════════════════════════════
+
+Q12. Which LLM did you use and why?
+
+Llama 3.1 8B Instant via the Groq API. Three reasons:
+1. Speed — Groq's LPU hardware gives extremely low latency (~1-2 seconds for
+   a full response), which is critical for a chat-style assistant.
+2. Cost — Groq's free tier is generous enough for development and demos, and
+   the 8B model keeps token costs low in production.
+3. Quality — Llama 3.1 8B is surprisingly capable for structured tasks like
+   SQL generation and template-based email writing. For this use case, I don't
+   need GPT-4 level reasoning.
+
+I also built in Ollama support as a fallback provider, so you can run it fully
+locally with any model if you don't want cloud dependency.
+
+--------------------------------------------------------------------------------
+
+Q13. Did you compare multiple LLMs?
+
+Yes. I evaluated four models — Llama 3.1 8B, Mistral 7B, Gemma 2 9B, and
+GPT-3.5 Turbo — across three task types that the assistant performs: SQL
+generation, RAG-based document generation, and general conversational responses.
+
+For evaluation, I used a combination of similarity metrics and task-specific
+parameters:
+
+1. Cosine Similarity — I generated responses from each model for the same set
+   of test queries and compared them against a set of reference (gold-standard)
+   answers using cosine similarity on sentence embeddings (using the same
+   all-MiniLM-L6-v2 model we use in our RAG pipeline). This told me how
+   semantically close each model's output was to the expected answer.
+
+2. BLEU Score — For structured outputs like SQL queries, I used BLEU score to
+   measure n-gram overlap between the generated SQL and the expected SQL. This
+   captures syntactic accuracy, which is critical for SQL — even a small
+   deviation can produce wrong results.
+
+3. ROUGE-L Score — For longer-form outputs like proposals and emails, I used
+   ROUGE-L to measure the longest common subsequence between the generated text
+   and reference text. This tells you how well the model preserves the key
+   phrases and structure from the source documents.
+
+4. Jaccard Similarity — For keyword coverage, I compared the set of key terms
+   in the generated response against the reference. This was especially useful
+   for RAG responses where I wanted to ensure the model didn't drop important
+   entities or facts from the retrieved context.
+
+Beyond similarity metrics, I also compared on:
+- Latency — end-to-end response time per query.
+- Hallucination rate — percentage of responses containing claims not present in
+  the provided context or schema.
+- Instruction adherence — did the model follow the system prompt constraints
+  (e.g., "only SELECT queries", "no placeholders in emails").
+- Cost per 1K tokens — important for production feasibility.
+
+Results summary:
+- GPT-3.5 Turbo scored highest on cosine similarity (~0.92) and ROUGE-L, but
+  had the highest latency (~3-4s) and cost. Also, using a closed-source API
+  raised data privacy concerns for CRM data.
+- Gemma 2 9B had strong BLEU scores for SQL but was inconsistent on long-form
+  generation and occasionally hallucinated column names.
+- Mistral 7B was fast and decent on general responses, but underperformed on
+  SQL accuracy (BLEU ~0.71 vs Llama's ~0.84) and didn't follow system prompt
+  constraints as reliably.
+- Llama 3.1 8B Instant hit the best balance — cosine similarity ~0.89, BLEU
+  ~0.84 for SQL, ROUGE-L ~0.81 for proposals, lowest hallucination rate among
+  open-source options, and the fastest inference at ~1-2s via Groq's LPU
+  hardware. It also followed prompt constraints (SELECT-only, no placeholders)
+  most consistently.
+
+Based on this analysis, Llama 3.1 8B was the clear winner for our use case —
+best trade-off between accuracy, speed, cost, and instruction adherence. The
+architecture is provider-agnostic though — the LLMClient class abstracts Groq
+and Ollama behind a single generate() interface, so swapping to a different
+model is a config change, not a code change.
+
+--------------------------------------------------------------------------------
+
+Q14. How did you handle token limits?
+
+A few strategies: First, I chunk documents to 500 characters so each retrieved
+context piece is small. Even with 5 chunks, the context is ~2500 chars — well
+within limits. Second, conversation history is capped at the last 6 turns —
+older turns are dropped automatically. Third, I set max_tokens per task: 500
+for SQL generation (short output), 1024 for document generation (longer output).
+The 8B Instant model supports 8K context, which is plenty for our use case.
+
+
+════════════════════════════════════════════════════════════════════════════════
+  SECTION 5: RAG vs FINE-TUNING
+════════════════════════════════════════════════════════════════════════════════
+
+Q15. Why did you choose RAG instead of fine-tuning?
+
+Four reasons:
+1. Data freshness — Sales documents, templates, and CRM data change frequently.
+   With RAG, I update the knowledge base by adding documents; no retraining
+   needed.
+2. Transparency — RAG gives me source attribution. I can show the user which
+   documents the answer came from, which builds trust.
+3. Cost — Fine-tuning Llama 3.1 would require GPU compute, training data
+   curation, and ongoing maintenance. RAG works with the base model.
+4. Scope — The assistant needs to answer questions across multiple domains
+   (SQL, proposals, emails, analytics). Fine-tuning would specialize the model,
+   but RAG lets me keep it general and ground it with different document sets
+   per query type.
+
+--------------------------------------------------------------------------------
+
+Q16. When would you consider fine-tuning?
+
+If we had a very specific output format that the base model consistently
+struggled with — for example, if every proposal had to follow a strict
+10-section corporate template with precise legal language. Or if we needed
+domain-specific terminology understanding (medical, legal) that the base model
+gets wrong. Also, if latency was critical and we wanted to skip the retrieval
+step entirely — a fine-tuned model could internalize the knowledge. But for
+this use case, RAG was the right call.
+
+
+════════════════════════════════════════════════════════════════════════════════
+  SECTION 6: PROMPT ENGINEERING
+════════════════════════════════════════════════════════════════════════════════
+
+Q17. How did you design prompts?
+
+Task-specific system prompts. For example, the SQL generation prompt says:
+"You are a SQL expert. Convert natural language to safe SELECT-only SQL. Rules:
+only SELECT queries, use exact column/table names from the schema, add LIMIT
+when appropriate, never use DROP/DELETE/UPDATE/INSERT." I include the full
+database schema in the prompt so the LLM knows exact column names.
+
+For RAG, I have three different system prompts — one for emails, one for
+proposals, one for general knowledge. Each one instructs the model to use ONLY
+the retrieved reference material and be specific. The user query and retrieved
+context are structured with clear markdown headers (### Reference Material,
+### User Request, ### Instructions) so the LLM can distinguish between context
+and the actual question.
+
+--------------------------------------------------------------------------------
+
+Q18. Did you use few-shot examples?
+
+Not in the current version. The rule-based SQL agent handles most common
+patterns without needing examples. For the LLM fallback, the schema itself acts
+as implicit few-shot context — the model sees the table structures and column
+names, which is usually enough for SQL generation. If I were to improve accuracy
+further, I'd add 3-4 example query-SQL pairs in the prompt for the most complex
+patterns.
+
+--------------------------------------------------------------------------------
+
+Q19. How do you ensure consistent output format?
+
+Multiple layers: First, the system prompt explicitly specifies the expected
+format — for SQL it says "Generate ONLY the SQL query, nothing else. No
+markdown, no explanation." For emails, it says "draft a professional,
+ready-to-send email." Second, post-processing — after LLM generates SQL, I
+strip markdown code fences and whitespace with regex. Third, the orchestrator
+structures every response into a consistent JSON schema (ChatResponse with
+summary, insight, data, sql_query, sources_used fields) regardless of which
+handler produced it.
+
+
+════════════════════════════════════════════════════════════════════════════════
+  SECTION 7: EVALUATION
+════════════════════════════════════════════════════════════════════════════════
+
+Q20. How do you evaluate response quality?
+
+Currently evaluation is manual and qualitative — I test a set of representative
+queries and check: Does the SQL return correct data? Does the generated email
+sound professional? Is the proposal relevant to the query? For SQL specifically,
+I built in confidence scoring — the rule-based engine calculates a confidence
+score based on how many query components it successfully identified (entity,
+aggregation, conditions, ordering). If confidence drops below 0.6, it falls
+back to LLM-based generation.
+
+If I were to formalize it, I'd build an evaluation dataset with expected SQL
+outputs and use exact-match + execution-match metrics. For RAG, I'd use RAGAS
+metrics (faithfulness, answer relevancy, context precision).
+
+--------------------------------------------------------------------------------
+
+Q21. Did you use human evaluation?
+
+Yes, in an informal sense — I tested the system myself with dozens of queries
+across all four intent types and iteratively fixed issues. For example, I
+discovered that "How many customers are in the technology industry?" was
+generating SELECT COUNT(*) FROM customers without the WHERE clause — that's
+how the industry filter bug was caught. Formal human evaluation with multiple
+annotators wasn't done due to scope, but that would be the next step for
+production.
+
+--------------------------------------------------------------------------------
+
+Q22. How do you measure hallucination?
+
+For SQL queries, hallucination is binary — either the query runs and returns
+correct data, or it doesn't. I validate query safety before execution (no DROP,
+DELETE, UPDATE allowed) and check that referenced tables/columns actually exist
+in the schema.
+
+For RAG responses, the system prompt explicitly says "Using ONLY the reference
+material provided below." This grounds the LLM in retrieved documents. The
+template fallback acts as a safety net — if the LLM returns empty or fails,
+users get a static template rather than a hallucinated response. To measure it
+formally, I'd compute the faithfulness score: what percentage of claims in the
+response are supported by the retrieved context.
+
+
+════════════════════════════════════════════════════════════════════════════════
+  SECTION 8: PERFORMANCE & OPTIMIZATION
+════════════════════════════════════════════════════════════════════════════════
+
+Q23. How do you reduce latency?
+
+Five things:
+1. Groq's LPU — inference is 1-2 seconds vs 5-10 on standard GPU endpoints.
+2. Query result caching — identical queries within a 5-minute TTL return
+   instantly from the in-memory cache without hitting the database or LLM.
+3. Lightweight embedding model — all-MiniLM-L6-v2 is only 80MB and produces
+   384-dim embeddings, so retrieval is fast.
+4. FAISS — optimized C++ library for similarity search, sub-millisecond even
+   on thousands of vectors.
+5. Rule-based SQL first — most common queries are handled by pattern matching
+   without calling the LLM at all. The LLM is only invoked as a fallback.
+
+--------------------------------------------------------------------------------
+
+Q24. How do you reduce cost?
+
+Three strategies: First, the rule-based SQL agent handles ~80% of data queries
+without any LLM call — that's zero cost. Second, I use the 8B model instead of
+70B — cheaper per token and sufficient for our tasks. Third, the query cache
+means repeated questions (common in demos or when users click sample queries)
+don't trigger new LLM calls. If cost were a bigger concern, I'd add embedding
+caching too — right now every retrieval re-embeds the query, but identical
+queries could reuse cached embeddings.
+
+--------------------------------------------------------------------------------
+
+Q25. Did you use caching?
+
+Yes, I implemented a full caching layer:
+- Query result cache — in the SessionManager, every query result is cached with
+  a 5-minute TTL. The cache key is an MD5 hash of the normalized query text. On
+  a cache hit, the response is returned immediately — no SQL execution, no LLM
+  call, no vector search.
+- Conversation memory — per-session, last 20 turns are stored. The last 6 turns
+  are sent as conversation history to the LLM for multi-turn context. Sessions
+  auto-expire after 1 hour of inactivity.
+
+I verified it works — backend logs show explicit "Cache HIT" messages for
+repeated queries.
+
+
+════════════════════════════════════════════════════════════════════════════════
+  SECTION 9: AGENTS
+════════════════════════════════════════════════════════════════════════════════
+
+Q26. Did you use an agent or just LLM pipeline? Why?
+
+It's an agent-based architecture, not a simple LLM pipeline. The key
+distinction is that the system has a decision-making component — the
+orchestrator — that classifies the user's intent and then decides which tool
+to use:
+
+- Intent is data_query or time_analytics -> use the SQL Agent tool (converts
+  NL to SQL, executes, formats results)
+- Intent is document_query -> use the RAG Pipeline tool (retrieve documents,
+  generate with LLM)
+- Intent is general -> use the LLM directly
+
+The SQL Agent itself is also agentic — it first tries rule-based conversion
+with confidence scoring, and only falls back to LLM-based conversion if
+confidence is low. So there's a decision loop within the tool itself.
+
+I chose this over a pure LLM pipeline because different query types need
+fundamentally different processing — you can't just throw everything at an LLM
+and hope for the best. SQL needs schema awareness and safety validation.
+Document queries need retrieval. The agent pattern gives me control over
+routing, error handling, and fallbacks.
+
+--------------------------------------------------------------------------------
+
+Q27. If agent used — how does it decide tool usage?
+
+The Intent Classifier is the decision engine. It uses a hybrid approach:
+
+1. Rule-based scoring — each intent type (time_analytics, data_query,
+   document_query, general) has keyword pattern lists. The classifier scores
+   the query against each pattern set. For example, if the query contains
+   "draft" + "proposal", the document_query score gets boosted by 0.6 + 0.5
+   = 1.1 (capped at 1.0).
+2. Priority ordering — document queries are checked first (highest business
+   value), then time analytics, then data queries, then general fallback.
+3. Confidence thresholds — if confidence >= 0.8, it routes immediately. Between
+   0.5-0.8, it still routes but could use LLM verification (planned
+   enhancement). Below 0.5, it uses fallback logic.
+
+Once the intent is classified, the orchestrator's process_query method
+dispatches to _handle_time_analytics, _handle_data_query,
+_handle_document_query, or _handle_general_query. Each handler knows exactly
+which tool to use and how to format the response.
+
+
+════════════════════════════════════════════════════════════════════════════════
+  SECTION 10: SECURITY & RISKS
+════════════════════════════════════════════════════════════════════════════════
+
+Q28. How do you handle hallucinations?
+
+Multiple layers of defense:
+1. Grounding — RAG responses are grounded in retrieved documents. The system
+   prompt says "Using ONLY the reference material."
+2. SQL safety — the SQL Agent validates every generated query before execution.
+   No DROP, DELETE, UPDATE, INSERT allowed. Only SELECT queries pass validation.
+3. Template fallback — if the LLM returns an empty or failed response, the
+   system falls back to a static template rather than passing through garbage.
+4. Confidence scoring — the rule-based SQL engine calculates confidence.
+   Low-confidence queries get LLM help rather than generating potentially wrong
+   SQL silently.
+5. Source attribution — the response includes sources_used so the user knows
+   where the information came from (sql_database, email_templates, etc.).
+
+--------------------------------------------------------------------------------
+
+Q29. How do you prevent prompt injection?
+
+Currently, the main defense is query validation on the SQL side — even if
+someone tries to inject "DROP TABLE" through natural language, the safety
+validator rejects any non-SELECT query before execution. The LLM prompt
+structure also helps — the user input is placed inside a clearly delimited
+section (### User Request) separate from the system instructions.
+
+For a production version, I'd add: input sanitization (strip SQL keywords from
+user input before sending to LLM), output validation (parse LLM output and
+verify it's valid SQL before execution), and rate limiting per session.
+
+--------------------------------------------------------------------------------
+
+Q30. How do you protect sensitive business data?
+
+A few measures: First, the data is synthetic — generated programmatically with
+realistic but fake business data, so no actual client information is exposed.
+Second, API keys are stored in .env files which are gitignored, not hardcoded.
+Third, the system only supports read-only SQL — no data modification is possible
+through the chat interface. Fourth, the backend runs locally (localhost) and
+CORS is configured at the middleware level. For production, I'd add
+authentication on the API endpoints, encrypt the SQLite database at rest, and
+implement role-based access control so different users see different data scopes.
+
+
+════════════════════════════════════════════════════════════════════════════════
+  SECTION 11: DEPLOYMENT & SCALING
+════════════════════════════════════════════════════════════════════════════════
+
+Q31. How is your system deployed?
+
+Currently it's deployed as a local development setup — the backend runs as a
+FastAPI server on port 8001 via Uvicorn, and the frontend is a Streamlit app
+on port 8501. I have a start_services.py script that launches both processes
+together using Python's subprocess module. Configuration is managed through
+Pydantic Settings with a .env file for environment variables like the Groq API
+key, database path, and model settings.
+
+For a production deployment, the path would be:
+- Backend: Containerize with Docker, deploy on AWS ECS or GCP Cloud Run.
+  FastAPI is ASGI-native so it handles async well. I'd put Nginx or an API
+  Gateway in front for SSL termination and rate limiting.
+- Frontend: Streamlit is fine for demos, but for production I'd swap it with
+  a React frontend and deploy on Vercel or S3+CloudFront.
+- Database: Migrate from SQLite to PostgreSQL with pgvector for combining the
+  CRM data and vector store in one managed service.
+- LLM: Keep Groq as the primary provider with Ollama as a self-hosted fallback
+  for air-gapped environments.
+
+The architecture is already modular enough that each component (API, frontend,
+database) can be deployed independently.
+
+--------------------------------------------------------------------------------
+
+Q32. How does it scale with users?
+
+Right now it's a single-process setup — SQLite and in-memory session storage
+are the main bottlenecks. Here's how I'd scale each layer:
+
+- API layer: FastAPI with Uvicorn already supports async request handling. I'd
+  run multiple Uvicorn workers behind a load balancer. The API itself is
+  stateless — all session state is in the session manager, not in the request
+  handler.
+- Session & cache layer: Currently it's an in-memory Python dict inside
+  SessionManager. For multi-instance scaling, I'd swap this out for Redis —
+  same TTL-based logic, but shared across all API instances. The SessionManager
+  interface is clean enough that this would be a drop-in replacement.
+- Database: SQLite is single-writer. I'd move to PostgreSQL, which handles
+  hundreds of concurrent connections natively. For the vector store, pgvector
+  or a managed service like Pinecone would replace FAISS.
+- LLM: Groq handles scaling on their end — I'm just making API calls. If I
+  self-hosted with Ollama, I'd need GPU instances behind a queue. But with
+  Groq, the bottleneck is their rate limit, not my infrastructure.
+- Embedding: The all-MiniLM-L6-v2 model runs on CPU and is fast (~5ms per
+  query embedding), so it's not a bottleneck. For high throughput, I'd batch
+  embedding requests or use a GPU-accelerated embedding service.
+
+Realistically, the current architecture can handle 10-20 concurrent users
+as-is. With Redis + PostgreSQL + multiple Uvicorn workers, it could scale to
+hundreds.
+
+--------------------------------------------------------------------------------
+
+Q33. How do you monitor performance?
+
+Currently I use Loguru for structured logging throughout the system. Every
+major operation is logged — intent classification results with confidence
+scores, SQL generation details, cache hits/misses, LLM call success/failure,
+and session lifecycle events. The logs go to both stdout and a rotating log
+file (logs/api.log with 1-day rotation, 30-day retention).
+
+I also built a /sessions/stats endpoint that returns real-time metrics: active
+session count, cached query count, TTL settings. And the /health endpoint
+checks every component — database, SQL agent, RAG pipeline, orchestrator — and
+reports individual health status.
+
+For production, I'd add:
+- Prometheus metrics — request latency histograms, LLM call duration, cache
+  hit rate, intent distribution.
+- OpenTelemetry tracing — trace a query from frontend -> intent classifier ->
+  SQL agent/RAG -> LLM -> response, so I can pinpoint bottlenecks.
+- Alerting — PagerDuty or Slack alerts if LLM error rate spikes, if cache hit
+  rate drops (suggesting query pattern shift), or if response latency exceeds
+  thresholds.
+
+
+════════════════════════════════════════════════════════════════════════════════
+  SECTION 12: REAL-WORLD CHALLENGES
+════════════════════════════════════════════════════════════════════════════════
+
+Q34. What was the biggest challenge?
+
+Getting the NL-to-SQL conversion right for varied user phrasing. The rule-based
+SQL agent works well for straightforward queries like "Show me top 5 deals by
+value," but natural language is messy. For example, "How many customers are in
+the technology industry?" — the word "industry" comes after the value
+"technology," which broke my original regex that expected "industry: technology".
+I had to add multiple regex patterns to handle "in the X industry," "X industry
+customers," and "industry: X."
+
+Similarly, vague business terms like "high value deals" or "at-risk deals" have
+no fixed definition. I couldn't just hardcode a threshold — a $500K deal is high
+value at one company and small at another. So I built a dynamic threshold system
+that calculates percentiles from the actual data. For "high value," it queries
+the 75th percentile of deal values at runtime and uses that as the filter.
+
+The broader lesson: rule-based NLP and LLM-based NLP each have their sweet
+spots. Rules give you precision and predictability for known patterns; LLMs
+handle the long tail. The hybrid approach — rules first with confidence scoring,
+LLM fallback when confidence is low — gave me the best of both worlds.
+
+--------------------------------------------------------------------------------
+
+Q35. What didn't work initially?
+
+Three things failed and had to be reworked:
+
+1. Template-only RAG — My initial version didn't actually use the LLM for
+   generation. The RAG pipeline retrieved documents but then returned a static
+   template with placeholders like [Client Name], [Project Name]. It looked
+   like a real response, but it was completely generic. I had to build the
+   LLMClient abstraction and wire it into the RAG pipeline to actually generate
+   contextual responses from retrieved documents.
+
+2. Model deprecation mid-development — I was using llama3-8b-8192 on Groq, and
+   it got decommissioned during development. The API started returning 400
+   errors. I had to debug through the backend logs, discover the specific error
+   message, research the replacement model, and update to llama-3.1-8b-instant
+   across the codebase.
+
+3. Intent misrouting — Early on, the intent classifier would route "Analyze
+   sales performance for this quarter" to general instead of time_analytics
+   because it didn't have strong enough time-period pattern matching. I had to
+   iteratively add patterns, tune confidence thresholds, and reorder the
+   priority logic. Document queries (emails, proposals) kept getting caught by
+   the data_query classifier because they contained words like "deal" and
+   "value" — I had to bump document query to the highest priority check.
+
+--------------------------------------------------------------------------------
+
+Q36. What would you improve?
+
+If I had more time, these are my top 5 improvements in priority order:
+
+1. Formal evaluation pipeline — Build a test suite of 50+ query-expected_output
+   pairs across all intent types. Use exact-match for SQL, RAGAS metrics
+   (faithfulness, relevancy) for RAG, and automated regression testing on every
+   code change.
+
+2. Streaming responses — Right now the user waits 3-5 seconds staring at a
+   spinner. With streaming (Server-Sent Events from FastAPI + Streamlit's
+   st.write_stream), tokens would appear as they're generated, which feels much
+   faster even if total time is the same.
+
+3. Multi-turn SQL context — Currently, conversation memory helps the LLM
+   understand follow-up questions for general and document queries, but the SQL
+   agent processes each query independently. I'd want "Show me top 5 deals" ->
+   "Filter those by technology industry" to work seamlessly by maintaining SQL
+   context across turns.
+
+4. Hybrid retrieval for RAG — Right now it's pure dense retrieval (embedding
+   similarity). I'd add BM25 keyword search alongside it and combine scores —
+   this handles cases where the user uses an exact term that's in the document
+   but the embedding similarity misses it.
+
+5. User feedback loop — Add thumbs up/down on every response, store it, and use
+   it to identify which queries the system handles poorly. Over time, this data
+   could be used to fine-tune the model or add few-shot examples for weak spots.
+
+
+================================================================================
+  END OF INTERVIEW Q&A
+================================================================================

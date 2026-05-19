@@ -1,0 +1,30 @@
+# Core dependencies
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.5.0
+pydantic-settings>=2.0.0
+python-dotenv>=1.0.0
+
+# Frontend
+streamlit>=1.28.0
+
+# RAG and embeddings
+sentence-transformers>=2.2.0
+faiss-cpu>=1.13.0
+numpy>=1.26.0
+pandas>=2.2.0
+
+# Data processing
+requests>=2.31.0
+aiofiles>=23.2.0
+
+# Document processing
+PyPDF2>=3.0.0
+python-docx>=0.8.11
+
+# LLM and AI (optional)
+openai>=1.3.0
+groq>=0.4.1
+
+# Logging and monitoring
+loguru>=0.7.0
