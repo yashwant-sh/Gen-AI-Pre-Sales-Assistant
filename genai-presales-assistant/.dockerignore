@@ -15,10 +15,10 @@ logs
 !README.md
 
 # Generated locally (API will recreate when empty)
-data/crm_database.db
+<!-- data/crm_database.db
 data/raw/*.csv
 models/*.bin
-models/*.pkl
+models/*.pkl -->
 
 # Personal / tooling
 .cursor

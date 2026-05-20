@@ -18,9 +18,10 @@ logs/
 .DS_Store
 
 # Generated CRM data & vectors (recreate with app / CRM generator)
-data/crm_database.db
-data/raw/*.csv
-models/*.bin
-models/*.pkl
+# data/crm_database.db
+# data/raw/*.cs
+# models/*.bin
+# models/*.pkl
+
 
 
